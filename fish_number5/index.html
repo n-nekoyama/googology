@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8">
+  <title>Fish Number 5 - ふぃっしゅ数バージョン 5</title>
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <link rel="stylesheet" href="style.css">
+  <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+  <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+  <script src="http://code.jquery.com/jquery-3.5.1.min.js" integrity="sha256-9/aliU8dGd2tb6OSsuzixeV4y/faTqgFtohetphbbj0=" crossorigin="anonymous"></script>
+  <script src="script.js"></script>
+  <script>
+
+function next_step(){
+    // m(?)...m(1)m(n)m(n)...m(n)m(n-1)...m(1)x
+    // \  part1  /\p2/\      part3    /\part4/
+    value = value.replace(/<[^>]+>/g, '');
+    
+    let match = value.match(/\d+$/);
+    let x = parseInt(match[0]);
+    let pos = value.lastIndexOf('m(1)', match.index - 5);
+    if (pos == -1 || pos == match.index - 4) pos = 0;
+    else pos += 4;
+    let part1 = value.slice(0, pos);
+    let part234 = value.slice(pos, match.index);
+
+    match = part234.match(/^(m\((\d+)\))(.*)$/);
+    let part2 = match[1];
+    let n = parseInt(match[2]);
+    let part34 = match[3];
+
+    if (n == 1){ // m(1) 適用
+        value = part1 + '<u>';
+        if (options.m1 == "1") value += (x + 1).toString();
+        if (options.m1 == "2") value += (x * 2).toString();
+        if (options.m1 == "3") value += (Math.pow(x , x)).toString();
+        value += '</u>';
+        setStepValue(part1 + '<strong>m(1)</strong><em>' + x.toString() + '</em> =', step - 1);
+    } else { // m(2以上) 適用
+        match = part34.match(new RegExp('^(.*?m\\(' + (n - 1).toString() + '\\))(.*)$'));
+        let part3 = match[1];
+        let part4 = match[2];
+        value = part1 + '<u>';
+        for(let i=0; i<x; i++) value += part3;
+        value += '</u>' + part4 + x.toString();
+        setStepValue(part1 + '<strong>' + part2 + '</strong><em>' + part3 + '</em>' + part4 + x.toString() + ' =', step - 1);
+    }
+    return;
+}
+
+function stepString(step){
+    return '';
+}
+
+  </script>
+</head>
+<body>
+  <h1>Fish Number 5 - ふぃっしゅ数バージョン 5</h1>
+
+  <!-- 説明 -->
+  <div id="description">
+    <a href="https://googology.wikia.org/ja/wiki/%E3%81%B5%E3%81%83%E3%81%A3%E3%81%97%E3%82%85%E6%95%B0%E3%83%90%E3%83%BC%E3%82%B8%E3%83%A7%E3%83%B35">
+    ふぃっしゅ数バージョン 5</a> の展開器です。<br />
+    初期値は m(3)m(3)m(2)m(1)3 のような形で入力してください。累乗や余計なカッコ、空白が入っているとうまく動きません。<br />
+    <strong>m(3)</strong><em>m(3)m(2)</em>m(1)3 = <u>m(3)m(2)m(3)m(2)m(3)m(2)</u>m(1)3 のように、
+    どの写像がどの部分に適用されてどうなったのか、をわかりやすく表示します。
+  </div>
+  <p>
+    <span id="description_on">説明を表示</span>
+    <span id="description_off">説明を非表示</span>
+  </p>
+
+  <!-- オプション -->
+  <div id="options">
+    m(1)x =
+    <select name="m1">
+      <option value="1">x + 1</option>
+      <option value="2">2x</option>
+      <option value="3" selected="selected">x^x（デフォルト）</option>
+    </select>
+  </div>
+
+  <!-- 初期値 -->
+  <div>
+    初期値：<input type="text" id="start_value" value="m(3)m(2)m(1)3" />
+    <button id="reset">Reset</button>
+  </div>
+
+  <!-- メイン -->
+  <div id="lists"></div>
+  <p><button id="next">Next</button></p>
+</body>
+</html>

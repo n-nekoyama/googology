@@ -1,0 +1,36 @@
+#lists p{
+    margin: 0;
+    word-wrap: break-word;
+}
+
+span.step{
+    color: #666;
+}
+
+#description{
+    display: none;
+    border: solid 3px #090;
+    background-color: #9f9;
+    padding: 0.5em;
+}
+
+#description,
+#description_off{
+    display: none;
+}
+
+#description_on,
+#description_off{
+    border: solid 1px black;
+}
+
+em{
+    font-style: normal;
+    font-weight: bold;
+    color: #00f;
+}
+strong{
+    font-style: normal;
+    font-weight: bold;
+    color: #f00;
+}
