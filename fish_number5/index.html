@@ -12,39 +12,47 @@
   <script>
 
 function next_step(){
-    // m(?)...m(1)m(n)m(n)...m(n)m(n-1)...m(1)x
-    // \  part1  /\p2/\      part3    /\part4/
     value = value.replace(/<[^>]+>/g, '');
     
-    let match = value.match(/\d+$/);
-    let x = parseInt(match[0]);
-    let pos = value.lastIndexOf('m(1)', match.index - 5);
-    if (pos == -1 || pos == match.index - 4) pos = 0;
+    // m(?)...m(1)m(n)...m(n-1)...m(1)x
+    // \  part1  /\p2/\ part3 /\part4/
+    let match, part1, part2, part3, part4, x;
+    x = parseInt(value.match(/\d+$/));
+
+    // m部分がm(1)のみ、または最後にm(1)が2個（以上）連続で続くなら、m(1)を1つ減らし、xをx^xにする。
+    if (match = value.match(/^(|.*m\(1\))m\(1\)\d+$/)){
+        part1 = match[1];
+        setStepValue(part1 + '<strong>m(1)</strong><em>' + x + '</em> =', step - 1);
+        if (options.m1 == "1") x = x + 1;
+        if (options.m1 == "2") x = x * 2;
+        if (options.m1 == "3") x = Math.pow(x , x);
+        value = part1 + '<u>' + x + '</u>';
+        return;
+    }
+
+    // そうでなかった場合は「右から2番目のm(1)」を探し、最初からそのm(1)までをpart1、
+    // その直後のm(n)をpart2、その後最初のm(n-1)までをpart3、それ以後をpart4として、
+    // part1 + (part3 の x回繰り返し) + part4 + x を新たな状態とする。
+    match = value.match(/m\(1\)\d+$/);
+    let pos = value.lastIndexOf('m(1)', match.index - 1);
+    if (pos == -1) pos = 0;
     else pos += 4;
-    let part1 = value.slice(0, pos);
-    let part234 = value.slice(pos, match.index);
+    part1 = value.slice(0, pos);
+    let part234 = value.slice(pos, match.index + 4);
 
     match = part234.match(/^(m\((\d+)\))(.*)$/);
-    let part2 = match[1];
-    let n = parseInt(match[2]);
+    part2 = match[1];
+    n = parseInt(match[2]);
     let part34 = match[3];
 
-    if (n == 1){ // m(1) 適用
-        value = part1 + '<u>';
-        if (options.m1 == "1") value += (x + 1).toString();
-        if (options.m1 == "2") value += (x * 2).toString();
-        if (options.m1 == "3") value += (Math.pow(x , x)).toString();
-        value += '</u>';
-        setStepValue(part1 + '<strong>m(1)</strong><em>' + x.toString() + '</em> =', step - 1);
-    } else { // m(2以上) 適用
-        match = part34.match(new RegExp('^(.*?m\\(' + (n - 1).toString() + '\\))(.*)$'));
-        let part3 = match[1];
-        let part4 = match[2];
-        value = part1 + '<u>';
-        for(let i=0; i<x; i++) value += part3;
-        value += '</u>' + part4 + x.toString();
-        setStepValue(part1 + '<strong>' + part2 + '</strong><em>' + part3 + '</em>' + part4 + x.toString() + ' =', step - 1);
-    }
+    let m_n_minus1 = 'm(' + (n - 1) + ')';
+    pos = part34.indexOf(m_n_minus1) + m_n_minus1.length;
+    part3 = part34.slice(0, pos);
+    part4 = part34.slice(pos);
+    setStepValue(part1 + '<strong>' + part2 + '</strong><em>' + part3 + '</em>' + part4 + x + ' =', step - 1);
+    value = part1 + '<u>';
+    for(let i=0; i<x; i++) value += part3;
+    value += '</u>' + part4 + x;
     return;
 }
 
