@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8">
+  <title>Laver table - レイバーのテーブル</title>
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <link rel="stylesheet" href="style.css">
+  <script>
+
+const Operator = "&#x1f431;";
+
+function create_table(max){
+  let table = new Array(max + 1);
+  let title = new Array(max + 1);
+  for (let i = 1; i <= max; i++){
+    table[i] = new Array(max + 1);
+    title[i] = new Array(max + 1);
+  }
+
+  for (let i = 1; i <= max; i++){
+    table[i][1] = i % max + 1;
+    title[i][1] = i + Operator + 1 + " = " + i + "+1 (mod " + max + ") = " + table[i][1];
+  }
+  for (let i = max; i >= 1; i--){
+    for (let j = 2; j <= max; j++){
+      table[i][j] = table[table[i][j - 1]][table[i][1]];
+      title[i][j] = i + Operator + j + " = " +
+                    i + Operator + "(" + (j - 1) + Operator + 1 + ") = " +
+                    "(" + i + Operator + (j - 1) + ")" + Operator + "(" + i + Operator + "1) = " +
+                    table[i][j - 1] + Operator + table[i][1] + " = " +
+                    table[i][j];
+    }
+  }
+  return { "table": table, "title": title };
+}
+
+function write_table(n){
+  let max = Math.pow(2, n);
+  let temp = create_table(max);
+  table = temp.table;
+  table_title = temp.title;
+
+  let html = "<table>";
+  html += "  <caption>サイズ " + n + " のレイバーのテーブル</caption>";
+  html += "  <tr><th>" + Operator + "</th>";
+  for (let i=1; i<=max; i++) html += "<th>" + i + "</th>";
+  html += "</tr>\n";
+
+  for (let i = 1; i <= max; i++){
+    html += "<tr><th>" + i + "</th>";
+    for (let j = 1; j <= max; j++){
+      html += "<td title=\"" + table_title[i][j] + "\">" + table[i][j] + "</td>";
+    }
+    html += "</tr>\n";
+  }
+
+  html += "</table>";
+  html += "<p>マウスをセルに乗せると、計算過程を表示できます。</p>"
+  document.getElementById("laver_table").innerHTML = html;
+}
+
+function click_create_button(){
+  write_table(parseInt(document.getElementById("size").value));
+  location.hash = document.getElementById("size").value;
+}
+
+window.addEventListener("DOMContentLoaded", function(event){
+  document.getElementById("create").onclick = click_create_button;
+  let n = parseInt(location.hash.slice(1));
+  if (!(n > 0)) n = 3;
+  document.getElementById("size").value = n;
+  write_table(n);
+});
+
+  </script>
+</head>
+<body>
+  <h1>Laver table - レイバーのテーブル</h1>
+
+  <p>
+    サイズ n = <input type="number" id="size" value="3" />
+    （縦 2<sup>n</sup>×横 2<sup>n</sup>）の<a href="https://googology.wikia.org/ja/wiki/%E3%83%AC%E3%82%A4%E3%83%90%E3%83%BC%E3%81%AE%E3%83%86%E3%83%BC%E3%83%96%E3%83%AB">レイバーのテーブル</a>を <button id="create">作成</button>
+  </p>
+
+  <!-- メイン -->
+  <div id="laver_table"></div>
+</body>
+</html>

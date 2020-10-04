@@ -1,0 +1,18 @@
+input#size{
+    width: 3em;
+    text-align: right;
+}
+
+table{
+    border-collapse: collapse;
+}
+
+caption{
+    font-size: 0.8em;
+}
+
+th, td{
+    border: solid 1px black;
+    min-width: 1.3em;
+    text-align: center;
+}
