@@ -24,6 +24,11 @@ span.step{
     border: solid 1px black;
 }
 
+#steps{
+    width: 3.5em;
+    text-align: center;
+}
+
 em{
     font-style: normal;
     font-weight: bold;

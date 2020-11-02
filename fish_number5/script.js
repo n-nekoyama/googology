@@ -1,4 +1,4 @@
-"use strict";
+'use strict';
 
 let value = undefined;
 let start = undefined;
@@ -53,7 +53,7 @@ $(function(){
 });
 
 function stepString(step){
-    return '<span class="step">step' + step + ': </span>';
+    return '= ';
 }
 
 function setStepValue(string, step){
@@ -73,18 +73,23 @@ function calculationEnd(){
 }
 
 function click_next(){
-    if (typeof value === 'undefined' || calculationEnd()) return;
-    step++;
-    let new_value = next_step();
-    switch(typeof new_value){
-        case 'string':
-            break;
-        case 'undefined':
-            new_value = value;
-        default:
-            new_value = new_value.toString();
+    let max = parseInt($('#steps').val() || 1) + step;
+    for(;step < max;){
+        step++;
+        if (typeof value === 'undefined' || calculationEnd()) return;
+        let new_value = next_step();
+        switch(typeof new_value){
+            case 'string':
+                break;
+            case 'undefined':
+                new_value = value;
+            default:
+                new_value = new_value.toString();
+        }
+        if ($('#skip') && $('#skip').prop('checked') && step < max &&
+            !(typeof value === 'undefined' || calculationEnd())) continue;
+        setStepValue(new_value, step);
     }
-    setStepValue(new_value, step);
 }
 
 function stringToValue(string){
@@ -93,8 +98,8 @@ function stringToValue(string){
 
 function stringToValueByJSON(string){
     try {
-        return JSON.parse(string)
-    } catch {
+        return JSON.parse(string);
+    } catch(e) {
         return undefined;
     }
 }

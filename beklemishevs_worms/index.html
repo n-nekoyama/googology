@@ -40,6 +40,10 @@ function next_step(){
     }
 }
 
+function stepString(step){
+    return '<span class="step">step' + step + ': </span>';
+}
+
 stringToValue = stringToValueByJSON;
 
   </script>
@@ -109,6 +113,10 @@ stringToValue = stringToValueByJSON;
 
   <!-- メイン -->
   <div id="lists"></div>
-  <p><button id="next">Next</button></p>
+  <p>
+    <button id="next">Next</button>
+    (<input type="number" id="steps" value="1" />steps)
+    <input type="checkbox" id="skip" value="1" />途中のステップを表示しない
+  </p>
 </body>
 </html>
